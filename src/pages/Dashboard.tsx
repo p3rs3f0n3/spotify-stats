@@ -9,32 +9,47 @@ interface Track {
 }
 
 const Dashboard: React.FC = () => {
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const token = localStorage.getItem('spotify_token');
-  const navigate = useNavigate();
+const [tracks, setTracks] = useState<Track[]>([]);
+const token = localStorage.getItem('spotify_token');
+const navigate = useNavigate();
+const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!token) return;
 
     const fetchTopTracks = async () => {
-      const res = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-      setTracks(data.items || []);
-    };
+      try {
+        const res = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+    
+        const data = await res.json();
+    
+        if (data.items?.length === 0) {
+          setError('No hay canciones favoritas para mostrar. ¡Escucha algo en Spotify y vuelve!');
+        } else {
+          setTracks(data.items);
+        }
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    };   
 
     fetchTopTracks();
   }, [token]);
+
 
   const handleLogout = () => {
     localStorage.removeItem('spotify_token');
     navigate('/goodbye');
   };
-  
   
 
   return (
@@ -46,7 +61,9 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {tracks.length > 0 ? (
+     {error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : tracks.length > 0 ? (
         <>
           <ul>
             {tracks.map((track, idx) => (
@@ -62,8 +79,10 @@ const Dashboard: React.FC = () => {
       ) : (
         <p>Cargando canciones...</p>
       )}
+
     </div>
   );
+  
 };
 
 export default Dashboard;
