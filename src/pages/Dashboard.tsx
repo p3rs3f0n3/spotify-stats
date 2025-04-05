@@ -32,8 +32,10 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('spotify_token');
-    navigate('/');
+    navigate('/goodbye');
   };
+  
+  
 
   return (
     <div style={{ padding: '20px' }}>
