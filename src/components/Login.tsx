@@ -1,7 +1,10 @@
 import React from 'react';
 
 const CLIENT_ID = '1942877cfa2e433688a4d7a47a4b26e2';
-const REDIRECT_URI = 'http://localhost:5173'; // o tu dominio en producción
+//const REDIRECT_URI = 'http://localhost:5173'; // o tu dominio en producción
+const REDIRECT_URI = import.meta.env.DEV
+  ? 'http://localhost:5173'
+  : 'https://spotify-stats-sigma.vercel.app';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 const SCOPES = ['user-top-read']; // Puedes agregar más scopes aquí
