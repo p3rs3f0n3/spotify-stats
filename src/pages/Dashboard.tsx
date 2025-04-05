@@ -2,18 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopTracksChart from '../components/TopTracksChart';
 
+
 interface Track {
   name: string;
   popularity: number;
   artists: { name: string }[];
 }
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC = () => 
+{
 const [tracks, setTracks] = useState<Track[]>([]);
 const token = localStorage.getItem('spotify_token');
 const navigate = useNavigate();
 const [error, setError] = useState<string | null>(null);
+const [noData, setNoData] = useState(false);
 
+
+console.log("Token actual:", token);
 
   useEffect(() => {
     if (!token) return;
@@ -32,9 +37,11 @@ const [error, setError] = useState<string | null>(null);
     
         const data = await res.json();
     
-        if (data.items?.length === 0) {
-          setError('No hay canciones favoritas para mostrar. ¡Escucha algo en Spotify y vuelve!');
-        } else {
+        if (!data.items || data.items.length === 0) {
+          setNoData(true);
+          return;
+        }         
+        else {
           setTracks(data.items);
         }
       } catch (err) {
@@ -50,7 +57,7 @@ const [error, setError] = useState<string | null>(null);
     localStorage.removeItem('spotify_token');
     navigate('/goodbye');
   };
-  
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -63,6 +70,12 @@ const [error, setError] = useState<string | null>(null);
 
      {error ? (
         <p style={{ color: 'red' }}>{error}</p>
+      ) : noData ? (
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <h3>🎶 Aún no hay datos para mostrar</h3>
+          <p>Tu cuenta de Spotify parece no tener suficiente historial de escucha.</p>
+          <p>¡Reproduce tus canciones favoritas y vuelve pronto! 🧡</p>
+        </div>
       ) : tracks.length > 0 ? (
         <>
           <ul>
@@ -78,11 +91,12 @@ const [error, setError] = useState<string | null>(null);
         </>
       ) : (
         <p>Cargando canciones...</p>
-      )}
+      )
+    }
 
     </div>
   );
-  
+
 };
 
 export default Dashboard;
