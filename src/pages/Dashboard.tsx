@@ -15,8 +15,6 @@ const [tracks, setTracks] = useState<Track[]>([]);
 const token = localStorage.getItem('spotify_token');
 const navigate = useNavigate();
 const [error, setError] = useState<string | null>(null);
-const [noData, setNoData] = useState(false);
-
 
 console.log("Token actual:", token);
 
@@ -30,25 +28,24 @@ console.log("Token actual:", token);
             Authorization: `Bearer ${token}`,
           },
         });
-    
-        if (!res.ok) {
-          throw new Error(`Error ${res.status}: ${res.statusText}`);
-        }
 
         if (res.status === 403) {
           setError("Parece que aún no tienes suficiente historial en Spotify. ¡Escucha algo y vuelve luego!");
           return;
         }
     
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+    
         const data = await res.json();
     
         if (!data.items || data.items.length === 0) {
-          setNoData(true);
-          return;
-        }         
-        else {
+          setError("😅 No encontramos canciones favoritas. ¡Escucha algunas y vuelve!");
+        } else {
           setTracks(data.items);
         }
+
       } catch (err) {
         setError((err as Error).message);
       }
@@ -77,12 +74,6 @@ console.log("Token actual:", token);
         <div style={{ textAlign: 'center', marginTop: '40px', color: 'red' }}>
         <p>{error}</p>
       </div>
-      ) : noData ? (
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <h3>🎶 Aún no hay datos para mostrar</h3>
-          <p>Tu cuenta de Spotify parece no tener suficiente historial de escucha.</p>
-          <p>¡Reproduce tus canciones favoritas y vuelve pronto! 🧡</p>
-        </div>
       ) : tracks.length > 0 ? (
         <>
           <ul>
