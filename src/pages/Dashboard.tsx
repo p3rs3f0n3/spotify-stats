@@ -34,6 +34,11 @@ console.log("Token actual:", token);
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`);
         }
+
+        if (res.status === 403) {
+          setError("Parece que aún no tienes suficiente historial en Spotify. ¡Escucha algo y vuelve luego!");
+          return;
+        }
     
         const data = await res.json();
     
@@ -69,7 +74,9 @@ console.log("Token actual:", token);
       </div>
 
      {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
+        <div style={{ textAlign: 'center', marginTop: '40px', color: 'red' }}>
+        <p>{error}</p>
+      </div>
       ) : noData ? (
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
           <h3>🎶 Aún no hay datos para mostrar</h3>
