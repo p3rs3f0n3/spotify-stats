@@ -1,54 +1,125 @@
-# React + TypeScript + Vite
+# 🎧 Spotify Stats Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web que permite a los usuarios iniciar sesión con su cuenta de Spotify y visualizar sus canciones más escuchadas mediante una gráfica y un listado.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Funcionalidades
 
-## Expanding the ESLint configuration
+- 🔐 Inicio de sesión con Spotify (OAuth)
+- 🎵 Consulta de canciones más escuchadas (top tracks)
+- 📊 Gráfico de barras de popularidad
+- 📋 Listado de canciones y artistas
+- ❌ Cierre de sesión completo (incluye logout en Spotify)
+- ⚠️ Mensajes claros en caso de errores o falta de historial
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠️ Tecnologías Usadas
+
+- **React + TypeScript**
+- **React Router DOM**
+- **Recharts** (gráficas)
+- **Spotify Web API**
+- **Fetch API**
+- **Vercel** (para despliegue)
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── components/
+│   └── Login.tsx
+│   └── TopTracksChart.tsx
+├── hooks/
+│   └── useSpotifyToken.ts
+├── pages/
+│   └── Home.tsx
+│   └── Dashboard.tsx
+│   └── Goodbye.tsx
+├── App.tsx
+└── main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🔐 Login con Spotify
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Utiliza el flujo **Implicit Grant Flow** con los siguientes parámetros:
+
+- `client_id`
+- `redirect_uri`
+- `response_type=token`
+- `scope=user-top-read`
+
+El token se guarda en `localStorage`.
+
+---
+
+## 🎧 API Spotify Usada
+
+- Endpoint: `https://api.spotify.com/v1/me/top/tracks?limit=10`
+- Header:
+  ```
+  Authorization: Bearer [ACCESS_TOKEN]
+  ```
+- Se obtiene:
+  - Nombre de canción
+  - Artistas
+  - Popularidad
+
+---
+
+## 📊 Visualización
+
+- **Lista de canciones y artistas**
+- **Gráfico de barras** con la popularidad de cada canción (usando `Recharts`)
+
+---
+
+## ❌ Logout
+
+- El botón "Salir" borra el token local
+- Redirige a una pantalla de despedida (`/goodbye`)
+- Se realiza logout global en Spotify (`https://accounts.spotify.com/logout`)
+- Luego regresa automáticamente a la pantalla de inicio
+
+---
+
+## ⚠️ Manejo de errores
+
+- `403 Forbidden`: si el usuario no tiene suficiente historial musical
+- Mensaje personalizado con sugerencia: _"Escucha música en Spotify y vuelve más tarde."_
+- Botón con enlace directo a Spotify Web
+
+---
+
+## ✅ Requisitos para Ejecutar
+
+1. Tener Node.js y npm instalados
+2. Clonar el repositorio
+3. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+4. Ejecutar:
+   ```bash
+   npm run dev
+   ```
+5. Configurar tu app de Spotify en:
+   [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
+
+6. Registrar tus `Redirect URI`:
+   ```
+   http://localhost:5173
+   https://TU_NOMBRE.vercel.app (si usas Vercel)
+   ```
+
+---
+
+## 💚 Créditos
+
+Hecho con cariño y beats por [Tu Nombre]  
+Basado en Spotify Web API & React
